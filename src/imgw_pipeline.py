@@ -1,9 +1,7 @@
 import argparse
-import re
-from urllib.parse import urljoin
 
-from constants import DEFAULT_END_YEAR, DEFAULT_START_YEAR, RAW_DATA_URL
-from scrapping import download_zip, get_html_contents, unzip_file, validate_zip
+from constants import DEFAULT_END_YEAR, DEFAULT_START_YEAR
+from scrapping import obtain_data
 
 
 def main(start_year: int, end_year: int) -> None:
@@ -21,21 +19,8 @@ def main(start_year: int, end_year: int) -> None:
     -------
     None
     """
-    links = get_html_contents(RAW_DATA_URL, "a", href=True)
-    for link in links:
-        link = link["href"]
-        if re.search(r"\d{4}", link):
-            full_url = urljoin(RAW_DATA_URL, link)
-            links = get_html_contents(full_url, "a", href=True)
-            zip_files_urls = [
-                urljoin(full_url, link["href"])
-                for link in links
-                if validate_zip(link["href"], start_year, end_year)
-            ]
-            for zip_file_url in zip_files_urls:
-                zipped_file = download_zip(zip_file_url)
-                unzipped = unzip_file(zipped_file)
-                print(unzipped)
+    obtained_files = obtain_data(start_year, end_year)
+    print(obtained_files)
 
 
 if __name__ == "__main__":
