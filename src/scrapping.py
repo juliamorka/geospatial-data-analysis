@@ -139,4 +139,4 @@ def unzip_file(zip_save_path: str, unzip_save_path: str = INTERIM_DATA_PATH) -> 
             zip_ref.extractall(unzipped_save_path)
         except:
             print(unzipped_save_path)
-    return os.path.join(unzipped_save_path, os.path.basename(zip_save_path))
+    return os.path.join(unzipped_save_path)

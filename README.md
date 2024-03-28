@@ -13,7 +13,7 @@ To run the data download/preprocess pipeline, activate conda environment and run
 ```sh
 python src/precip_data_scrapper.py --start-year {start_year} --end-year {end_year}
 ```
-
+By default, 1990 is used as a start year and 2020 is used as an end year.
 
 
 
