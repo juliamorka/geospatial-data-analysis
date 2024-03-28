@@ -1,17 +1,11 @@
-import argparse
 import os
-import re
 import zipfile
-from urllib.parse import urljoin
 
 import requests
 from bs4 import BeautifulSoup
 from bs4.element import ResultSet
 
 from constants import (
-    RAW_DATA_URL,
-    DEFAULT_START_YEAR,
-    DEFAULT_END_YEAR,
     HTTP_REQUEST_TIMEOUT,
     INPUT_DATA_PATH,
     INTERIM_DATA_PATH,
@@ -19,7 +13,7 @@ from constants import (
 
 
 def get_html_contents(
-    url: str, html_tag: str, timeout: int = 10, **soup_kwargs
+        url: str, html_tag: str, timeout: int = 10, **soup_kwargs
 ) -> ResultSet:
     """
     Retrieve contents from a webpage and return elements specified by HTML tag.
@@ -146,54 +140,3 @@ def unzip_file(zip_save_path: str, unzip_save_path: str = INTERIM_DATA_PATH) -> 
         except:
             print(unzipped_save_path)
     return os.path.join(unzipped_save_path, os.path.basename(zip_save_path))
-
-
-def main(start_year: int, end_year: int):
-    """
-    Main function to retrieve, download, and extract ZIP files from IMGW webpage.
-
-    Parameters
-    ----------
-    start_year : int
-        The start year of the range (inclusive) for validating ZIP files.
-    end_year : int
-        The end year of the range (inclusive) for validating ZIP files.
-
-    Returns
-    -------
-    None
-    """
-    links = get_html_contents(RAW_DATA_URL, "a", href=True)
-    for link in links:
-        link = link["href"]
-        if re.search(r"\d{4}", link):
-            full_url = urljoin(RAW_DATA_URL, link)
-            links = get_html_contents(full_url, "a", href=True)
-            zip_files_urls = [
-                urljoin(full_url, link["href"])
-                for link in links
-                if validate_zip(link["href"], start_year, end_year)
-            ]
-            for zip_file_url in zip_files_urls:
-                zipped_file = download_zip(zip_file_url)
-                unzipped = unzip_file(zipped_file)
-                print(unzipped)
-
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="IMGW data pipeline")
-    parser.add_argument(
-        "--start-year",
-        type=int,
-        default=DEFAULT_START_YEAR,
-        help="First year for which the data should be obtained.",
-    )
-    parser.add_argument(
-        "--end-year",
-        type=int,
-        default=DEFAULT_END_YEAR,
-        help="Last year for which the data should be obtained.",
-    )
-    args = parser.parse_args()
-
-    main(start_year=args.start_year, end_year=args.end_year)
