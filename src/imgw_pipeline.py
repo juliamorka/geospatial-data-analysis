@@ -6,7 +6,13 @@ from scrapping import obtain_data
 
 def main(start_year: int, end_year: int) -> None:
     """
-    Main function to retrieve, download, and extract ZIP files from IMGW webpage.
+    Process the data - retrieve, download, and extract ZIP files from IMGW webpage.
+    Subsequent stages of processing include:
+
+    - feature engineering,
+    - handling missing values,
+    - cleaning the data
+    and more.
 
     Parameters
     ----------

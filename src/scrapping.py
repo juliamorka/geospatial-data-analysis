@@ -153,7 +153,7 @@ def unzip_file(
 
 def obtain_data(start_year: int, end_year: int) -> list[str]:
     """
-    Function to retrieve, download, and extract ZIP files from IMGW webpage.
+    Retrieve, download, and extract ZIP files from IMGW webpage.
 
     Parameters
     ----------
