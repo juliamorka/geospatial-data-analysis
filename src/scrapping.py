@@ -144,7 +144,8 @@ def unzip_file(
             zip_ref.extractall(unzipped_save_path)
             extracted_files = zip_ref.namelist()
         except:
-            print(unzipped_save_path)
+            print(f"Could not unzip archive: {zip_save_path}")
+            return []
     return [
         os.path.join(unzipped_save_path, extracted_file)
         for extracted_file in extracted_files
