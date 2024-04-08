@@ -1,7 +1,7 @@
 import argparse
 
-from constants import DEFAULT_END_YEAR, DEFAULT_START_YEAR
-from scrapping import obtain_data
+from src.constants import DEFAULT_END_YEAR, DEFAULT_START_YEAR
+from src.scrapping import obtain_data
 
 
 def main(start_year: int, end_year: int) -> None:
