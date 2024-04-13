@@ -1,14 +1,18 @@
 import argparse
+import os
 
 from src.constants import (
+    CHOSEN_VOIVODESHIP,
     DEFAULT_END_YEAR,
     DEFAULT_START_YEAR,
     IMGW_PRECIP_DATA_READ_OPTIONS,
     IMGW_STATIONS_INFO_READ_OPTIONS,
     PERCENT_OF_DATES_THRESHOLD,
+    WINDOWS_TO_CALCULATE,
+    OUTPUTS_PATH
 )
-from src.inspection import create_stations_voivodeship_mapping
-from src.plotting import plot_stations
+from src.inspection import create_stations_voivodeship_mapping, get_missing_stations_info
+from src.plotting import plot_stations, plot_spi_and_total_precip_time_series
 from src.preprocessing import append_stations_info, merge_unzipped_data
 from src.scrapping import obtain_data
 from src.transformations import (
@@ -20,6 +24,7 @@ from src.transformations import (
     interpolate_total_precip,
     transform_coords,
 )
+from src.spi import calculate_stations_spi
 
 
 def main(start_year: int, end_year: int) -> None:
@@ -43,20 +48,26 @@ def main(start_year: int, end_year: int) -> None:
     -------
     None
     """
-    obtain_data(start_year, end_year)
+    # obtain_data(start_year, end_year)
     merged_df = merge_unzipped_data(
         "data/interim", start_year, end_year, **IMGW_PRECIP_DATA_READ_OPTIONS
     )
+    print("a")
+    # get_missing_stations_info(merged_df, **IMGW_STATIONS_INFO_READ_OPTIONS)
+    print("b")
     df_with_stations_info = append_stations_info(merged_df, **IMGW_STATIONS_INFO_READ_OPTIONS)
+    print("c")
     df_with_stations_info = transform_coords(df_with_stations_info, ["lat", "lon"])
-    plot_stations(df_with_stations_info)
-
-    # GET MISSING STATIONS INFO !!!
+    print("d")
+    # plot_stations(df_with_stations_info)
+    print("e")
 
     voivodeships_mapping = create_stations_voivodeship_mapping(df_with_stations_info)
+    print("f")
     analyzed_subset = get_chosen_voivodeship_stations(
-        df_with_stations_info, voivodeships_mapping, "podlaskie"
+        df_with_stations_info, voivodeships_mapping, CHOSEN_VOIVODESHIP
     )
+
     analyzed_subset_tst = convert_date_info_to_timestamp(
         analyzed_subset, ["year", "month", "day"]
     )
@@ -65,11 +76,21 @@ def main(start_year: int, end_year: int) -> None:
         analyzed_subset_tst, PERCENT_OF_DATES_THRESHOLD
     )
     full_dates = fill_missing_dates(analyzed_subset_subset)
-    interpolated = interpolate_total_precip(full_dates)
+    print("j")
 
-    m1 = calculate_stations_rolling_precipitation_sum(interpolated, 1)
-    m3 = calculate_stations_rolling_precipitation_sum(interpolated, 3)
-    m12 = calculate_stations_rolling_precipitation_sum(interpolated, 12)
+    interpolated = interpolate_total_precip(full_dates)
+    print("k")
+
+    for window in WINDOWS_TO_CALCULATE:
+        rolling_precip_sum = calculate_stations_rolling_precipitation_sum(interpolated, window)
+        spi = calculate_stations_spi(rolling_precip_sum,
+                                     save_to_csv=True,
+                                     output_csv_path=os.path.join(OUTPUTS_PATH, f"spi_{window}.csv"))
+        plot_spi_and_total_precip_time_series(rolling_precip_sum, spi,
+                                              output_plot_path=os.path.join(OUTPUTS_PATH,
+                                                                            f"spi_rolling_total_precip_ts_w{window}.png"))
+    print("finisz")
+    # print total execution time
 
 
 if __name__ == "__main__":

@@ -3,6 +3,7 @@ DEFAULT_START_YEAR = 1990
 DEFAULT_END_YEAR = 2020
 INPUT_DATA_PATH = "data/input/"
 INTERIM_DATA_PATH = "data/interim/"
+OUTPUTS_PATH = "outputs/"
 HTTP_REQUEST_TIMEOUT = 10
 VOIVODESHIPS_URL = "https://raw.githubusercontent.com/ppatrzyk/polska-geojson/master/wojewodztwa/wojewodztwa-min.geojson"
 COLS_TO_USE = list(range(6)) + [7]
@@ -30,3 +31,7 @@ IMGW_STATIONS_INFO_READ_OPTIONS = {
     "encoding": "cp1250",
 }
 PERCENT_OF_DATES_THRESHOLD = int(30 * 365 * 40 / 100)
+CHOSEN_VOIVODESHIP = "podlaskie"
+DEFAULT_STATIONS_PLOT_PATH = "outputs/stations_map.png"
+WINDOWS_TO_CALCULATE = [1, 3, 12]
+DEFAULT_SPI_PRECIP_TS_PLOT_PATH = "outputs/spi_rolling_total_precip_ts.png"

@@ -4,14 +4,19 @@ from collections import defaultdict
 import geopandas as gpd
 import pandas as pd
 
-from src.constants import VOIVODESHIPS_URL
+from src.constants import (
+    STATIONS_INFO_COLUMNS_LABELS,
+    STATIONS_INFO_PATH,
+    STATIONS_INFO_PK,
+    VOIVODESHIPS_URL,
+)
 
 
 def get_missing_stations_info(
     merged_stations_data: pd.DataFrame,
-    stations_info_path: str,
-    stations_info_columns_labels: list,
-    primary_key_col: str,
+    stations_info_path: str = STATIONS_INFO_PATH,
+    stations_info_columns_labels: list = STATIONS_INFO_COLUMNS_LABELS,
+    primary_key_col: str = STATIONS_INFO_PK,
     **read_csv_kwargs
 ) -> None:
     """
@@ -43,21 +48,18 @@ def create_stations_voivodeship_mapping(
     Creates a mapping between stations and voivodeships and saves it to a JSON file.
 
     Parameters:
-        merged (pd.DataFrame): DataFrame containing stations data.
+        merged (gpd.GeoDataFrame): GeoDataFrame containing stations data.
         crs (str, optional): Coordinate reference system. Defaults to "EPSG:4326".
         voivodeship_boundaries_url (str, optional): URL to the file containing voivodeships
             boundaries data. Defaults to VOIVODESHIPS_URL.
     """
     mapping = defaultdict(list)
-    gdf = gpd.GeoDataFrame(
-        merged, geometry=gpd.points_from_xy(merged["lon"], merged["lat"]), crs=crs
-    )
-    woj = gpd.read_file(voivodeship_boundaries_url, crs=crs)
-    woj.columns = ["id", "name", "geometry"]
-    stacje = gdf[["name", "lat", "lon", "geometry"]].drop_duplicates("geometry")
-    for _, wojewodztwo in woj.iterrows():
-        mapping[wojewodztwo["name"]].extend(
-            stacje[stacje.within(wojewodztwo["geometry"])]["name"].tolist()
+    voivodeships = gpd.read_file(voivodeship_boundaries_url, crs=crs)
+    voivodeships.columns = ["id", "name", "geometry"]
+    stations = merged[["name", "lat", "lon", "geometry"]].drop_duplicates("geometry")
+    for _, voivodeship in voivodeships.iterrows():
+        mapping[voivodeship["name"]].extend(
+            stations[stations.within(voivodeship["geometry"])]["name"].tolist()
         )
     with open("outputs/stations_mapping.json", "w") as file:
         json.dump(dict(mapping), file, indent=4)

@@ -1,13 +1,18 @@
+import geopandas as gpd
 import pandas as pd
 
 
-def transform_coords(merged: pd.DataFrame, coord_cols: list):
+def transform_coords(merged: pd.DataFrame, coord_cols: list, crs: str = "EPSG:4326"):
     """
     Transforms coordinates from degrees, minutes, and seconds to decimal degrees.
 
     Parameters:
         merged (pd.DataFrame): DataFrame containing coordinates columns.
         coord_cols (list): List of columns containing coordinates to be transformed.
+        crs (str, optional): Coordinate reference system. Defaults to "EPSG:4326".
+
+    Returns:
+        gpd.GeoDataFrame: A GeoDataFrame containing proper coordinates and geometries.
     """
 
     def parse_coordinates_to_degrees(encoded):
@@ -16,11 +21,13 @@ def transform_coords(merged: pd.DataFrame, coord_cols: list):
     for coord_col in coord_cols:
         merged = merged[merged[coord_col].str.match(r"((\d){2}\s*){3}")]
         merged[coord_col] = merged[coord_col].apply(parse_coordinates_to_degrees)
-    return merged
+    return gpd.GeoDataFrame(
+        merged, geometry=gpd.points_from_xy(merged["lon"], merged["lat"]), crs=crs
+    )
 
 
 def get_chosen_voivodeship_stations(
-    df: pd.DataFrame, stations_mapping: dict, voivodeship: str
+        df: pd.DataFrame, stations_mapping: dict, voivodeship: str
 ) -> pd.DataFrame:
     """
     Filter DataFrame to get stations located in a specific voivodeship.
@@ -70,7 +77,7 @@ def drop_stations_below_threshold(df: pd.DataFrame, threshold: int) -> pd.DataFr
     stations_records_count = grouped_df["date"].agg([len])
     stations_above_threshold = stations_records_count.index[
         stations_records_count["len"] >= threshold
-    ]
+        ]
     analyzed_subset_subset = df[df["name"].isin(stations_above_threshold)].reset_index(
         drop=True
     )
@@ -141,9 +148,7 @@ def interpolate_total_precip(df: pd.DataFrame) -> pd.DataFrame:
     return interpolated.reset_index()
 
 
-def calculate_stations_rolling_precipitation_sum(
-    df: pd.DataFrame, window: int
-) -> pd.Series:
+def calculate_stations_rolling_precipitation_sum(df: pd.DataFrame, window: int) -> pd.DataFrame:
     """
     Calculates the rolling sum of precipitation for each station over a specified window.
 
@@ -152,16 +157,13 @@ def calculate_stations_rolling_precipitation_sum(
         window (int): The size of the rolling window.
 
     Returns:
-        pd.Series: A Series containing the rolling sum of precipitation for each station.
+        pd.DataFrame: A DataFrame containing the rolling sum of precipitation for each station.
     """
-    df_sum = df.groupby(["station_code", df.date.dt.year, df.date.dt.month])[
-        "total_precip"
-    ].sum()
+    df_sum = df.groupby(["station_code", df.date.dt.year, df.date.dt.month])["total_precip"].sum()
     idx = df_sum.index
     df_sum.index.names = ["station_code", "year", "month"]
     df_sum = df_sum.reset_index()
-    rolling_sum = (
-        df_sum.groupby(df_sum["station_code"]).rolling(window)["total_precip"].sum()
-    )
+    rolling_sum = df_sum.groupby(df_sum["station_code"]).rolling(window)["total_precip"].sum()
     rolling_sum.index = idx
-    return rolling_sum
+    rolling_sum = rolling_sum.dropna()
+    return pd.DataFrame(rolling_sum).reset_index()
