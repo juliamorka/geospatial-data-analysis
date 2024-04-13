@@ -7,12 +7,16 @@ import requests
 from bs4 import BeautifulSoup
 from bs4.element import ResultSet
 
-from src.constants import (HTTP_REQUEST_TIMEOUT, INPUT_DATA_PATH,
-                           INTERIM_DATA_PATH, RAW_DATA_URL)
+from src.constants import (
+    HTTP_REQUEST_TIMEOUT,
+    INPUT_DATA_PATH,
+    INTERIM_DATA_PATH,
+    RAW_DATA_URL,
+)
 
 
 def get_html_contents(
-        url: str, html_tag: str, timeout: int = 10, **soup_kwargs
+    url: str, html_tag: str, timeout: int = 10, **soup_kwargs
 ) -> ResultSet:
     """
     Retrieve contents from a webpage and return elements specified by HTML tag.
@@ -95,7 +99,7 @@ def download_zip(zip_file_url: str, save_path: str = INPUT_DATA_PATH) -> str:
 
 
 def create_interim_dir(
-        zip_save_path: str, unzip_save_path: str = INTERIM_DATA_PATH
+    zip_save_path: str, unzip_save_path: str = INTERIM_DATA_PATH
 ) -> str:
     """
     Create an interim directory for storing the contents of a ZIP file after extraction.
@@ -120,7 +124,7 @@ def create_interim_dir(
 
 
 def unzip_file(
-        zip_save_path: str, unzip_save_path: str = INTERIM_DATA_PATH
+    zip_save_path: str, unzip_save_path: str = INTERIM_DATA_PATH
 ) -> list[str]:
     """
     Unzip a ZIP file to a specified directory.
