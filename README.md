@@ -28,7 +28,7 @@ To run the data download/preprocess pipeline, activate conda environment and run
 ```sh
 python imgw_pipeline.py --start-year {start_year} --end-year {end_year} [--download-data]
 ```
-By default, 1990 is used as a start year and 2020 is used as an end year. Download data (--download-data) flag is
+By default, 1990 is used as a start year and 2020 is used as an end year. Download data (`--download-data`) flag is
 optional, and it implies whether the data should be downloaded and unzipped before running the pipeline. If the unzipped
 data is present in default location (`data/interim`), this flag should be skipped to save time.
 
