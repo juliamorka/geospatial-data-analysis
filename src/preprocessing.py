@@ -21,12 +21,16 @@ def merge_unzipped_data(
     Merges unzipped data from multiple years into a single DataFrame.
 
     Parameters:
-        interim_data_path (str): Path to the directory containing unzipped data.
-        start_year (int, optional): Starting year for merging data (inclusive). Defaults to 1990.
-        end_year (int, optional): Ending year for merging data (inclusive). Defaults to 2020.
-        output_columns_labels (list): List of column labels for the merged DataFrame.
-            Defaults to COLUMNS_LABELS.
-        **read_csv_kwargs: Additional keyword arguments to be passed to pandas read_csv function.
+        interim_data_path (str): Path to the directory
+            which contains unzipped data.
+        start_year (int, optional): Starting year for
+            merging data (inclusive). Defaults to 1990.
+        end_year (int, optional): Ending year for
+            merging data (inclusive). Defaults to 2020.
+        output_columns_labels (list): List of column labels
+            for the merged DataFrame. Defaults to COLUMNS_LABELS.
+        **read_csv_kwargs: Additional keyword arguments to
+            be passed to pandas read_csv function.
 
     Returns:
         pd.DataFrame: Merged DataFrame containing data from specified years.
@@ -55,17 +59,22 @@ def append_stations_info(
 
     Parameters:
         merged_stations_data (pd.DataFrame): Merged stations data DataFrame.
-        stations_info_path (str): Path/URL of the file containing stations information.
-            Defaults to STATIONS_INFO_PATH.
-        stations_info_columns_labels (list): List of column labels for the stations information DataFrame.
+        stations_info_path (str): Path/URL of the file containing
+            stations information. Defaults to STATIONS_INFO_PATH.
+        stations_info_columns_labels (list): List of column labels
+            for the stations information DataFrame.
             Defaults to STATIONS_INFO_COLUMNS_LABELS.
         primary_key_col (str): Primary key column to perform the merge on.
             Defaults to STATIONS_INFO_PK.
-        **read_csv_kwargs: Additional keyword arguments to be passed to pandas read_csv function.
+        **read_csv_kwargs: Additional keyword arguments
+            to be passed to pandas read_csv function.
 
     Returns:
-        pd.DataFrame: Merged DataFrame containing stations data with appended stations information.
+        pd.DataFrame: Merged DataFrame containing
+            stations data with appended stations information.
     """
     stations_info = pd.read_csv(stations_info_path, **read_csv_kwargs)
     stations_info.columns = stations_info_columns_labels
-    return merged_stations_data.merge(stations_info, how="inner", on=primary_key_col)
+    return merged_stations_data.merge(
+        stations_info, how="inner", on=primary_key_col
+    )
