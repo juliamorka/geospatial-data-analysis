@@ -10,9 +10,13 @@ Welcome to Precipitation Analysis Project! This project focuses on downloading a
  -----------------------
 
 ### Conda environment
-To create the environment, when running the project for thr first time, run below command from the main project directory:
+To create the environment, when running the project for the first time, run below command from the main project directory:
 ```sh
 conda env create -f env.yml
+```
+(Optional) Alternatively, to install locked environment, run below command from the main project directory:
+```sh
+conda-lock install --name spi-env conda-lock.yml
 ```
 To update the environment run, run below command from the main project directory:
 ```sh
