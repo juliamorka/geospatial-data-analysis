@@ -46,4 +46,4 @@ CHOSEN_VOIVODESHIP = "podlaskie"
 DEFAULT_STATIONS_PLOT_PATH = "outputs/stations_map.png"
 WINDOWS_TO_CALCULATE = [1, 3, 12]
 DEFAULT_SPI_PRECIP_TS_PLOT_PATH = "outputs/spi_rolling_total_precip_ts.png"
-NUMBER_OF_TASKS = 15
+NUMBER_OF_TASKS = 14
