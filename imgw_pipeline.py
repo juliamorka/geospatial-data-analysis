@@ -159,7 +159,7 @@ if __name__ == "__main__":
         type=bool,
         default=False,
         help="Whether to download the data or use the"
-             "already downloaded and unzipped files.",
+        "already downloaded and unzipped files.",
     )
     args = parser.parse_args()
 

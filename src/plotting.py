@@ -33,13 +33,17 @@ def plot_stations(
     """
     voivodeships = gpd.read_file(voivodeship_boundaries_url, crs=crs)
     voivodeships.columns = ["id", "name", "geometry"]
-    stations = merged[["name", "lat", "lon", "geometry"]].drop_duplicates("geometry")
+    stations = merged[["name", "lat", "lon", "geometry"]].drop_duplicates(
+        "geometry"
+    )
     fig, ax = plt.subplots(1, 1, figsize=(15, 10))
     plt.tight_layout()
     voivodeships.plot(ax=ax, color="dodgerblue", zorder=1)
     voivodeships.boundary.plot(ax=ax, color="blue", zorder=2)
     stations.plot(ax=ax, color="red", zorder=3)
-    ax.set_title("Measurement stations on top of Polish voivodeships", fontsize=18)
+    ax.set_title(
+        "Measurement stations on top of Polish voivodeships", fontsize=18
+    )
     ax.set_xlabel("Longitude [degrees]", fontsize=12)
     ax.set_ylabel("Latitude [degrees]", fontsize=12)
     fig.savefig(output_plot_path, bbox_inches="tight")
@@ -74,7 +78,9 @@ def plot_spi_and_total_precip_time_series(
             format="%Y-%m",
         )
 
-    fig, axes = plt.subplots(ceil(len(unique_stations) / 2), 2, figsize=(15, 20))
+    fig, axes = plt.subplots(
+        ceil(len(unique_stations) / 2), 2, figsize=(15, 20)
+    )
     fig.tight_layout()
     fig.subplots_adjust(hspace=0.5, wspace=0.2)
     for ax, station_code in zip(axes.flat, unique_stations):
