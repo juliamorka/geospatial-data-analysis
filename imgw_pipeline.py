@@ -156,8 +156,6 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--download-data",
-        type=bool,
-        default=False,
         action="store_true",
         help="Whether to download the data or use the"
         "already downloaded and unzipped files.",
