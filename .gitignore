@@ -162,3 +162,7 @@ cython_debug/
 # Ignore downloaded data, but keep the folder as a skeleton template
 data/*
 !data/.gitkeep
+
+#Ignore outputs, but keep the folder as a skeleton template
+outputs/*
+!outputs/.gitkeep

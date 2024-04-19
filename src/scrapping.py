@@ -7,31 +7,37 @@ import requests
 from bs4 import BeautifulSoup
 from bs4.element import ResultSet
 
-from src.constants import (HTTP_REQUEST_TIMEOUT, INPUT_DATA_PATH,
-                           INTERIM_DATA_PATH, RAW_DATA_URL)
+from src.constants import (
+    HTTP_REQUEST_TIMEOUT,
+    INPUT_DATA_PATH,
+    INTERIM_DATA_PATH,
+    RAW_DATA_URL,
+)
 
 
 def get_html_contents(
-        url: str, html_tag: str, timeout: int = 10, **soup_kwargs
+    url: str, html_tag: str, timeout: int = 10, **soup_kwargs
 ) -> ResultSet:
     """
-    Retrieve contents from a webpage and return elements specified by HTML tag.
+    Retrieve contents from a webpage and return
+    elements specified by HTML tag.
 
     Parameters
     ----------
-    url : str
-        The URL of the webpage to retrieve contents from.
-    html_tag : str
-        The HTML tag to search for in the webpage.
-    timeout : int, optional
-        Timeout value for the HTTP request in seconds. Defaults to 10.
-    **soup_kwargs
-        Additional keyword arguments to be passed to BeautifulSoup.
+    url (str): The URL of the webpage to
+        retrieve contents from.
+    html_tag (str): The HTML tag to search for
+        in the webpage.
+    timeout (int, optional): Timeout value for the HTTP
+        request in seconds.
+        Defaults to 10.
+    **soup_kwargs: Additional keyword arguments
+        to be passed to BeautifulSoup.
 
     Returns
     -------
-    ResultSet
-        A result set containing elements matching the specified HTML tag.
+    ResultSet: A result set containing elements
+        matching the specified HTML tag.
     """
     resp = requests.get(url, timeout=timeout)
     soup = BeautifulSoup(resp.text, "html.parser")
@@ -40,22 +46,20 @@ def get_html_contents(
 
 def validate_zip(name: str, start_year: int, end_year: int) -> bool:
     """
-    Validate if a given href corresponds to a ZIP file and falls within
-    the specified range of years, according to IMGW file naming convention.
+    Validate if a given href corresponds to a ZIP file
+    and falls within the specified range of years,
+    according to IMGW file naming convention.
 
     Parameters
     ----------
-    name : str
-        The URL or filename to validate.
-    start_year : int
-        The start year of the range (inclusive).
-    end_year : int
-        The end year of the range (inclusive).
+    name (str): The URL or filename to validate.
+    start_year (int): The start year of the range (inclusive).
+    end_year (int): The end year of the range (inclusive).
 
     Returns
     -------
-    bool
-        True if the href corresponds to a ZIP file and its year falls within the specified range,
+    bool: True if the href corresponds to a ZIP file
+        and its year falls within the specified range,
         False otherwise.
     """
     return name.lower().endswith("zip") and int(name.split("_")[0]) in range(
@@ -69,17 +73,16 @@ def download_zip(zip_file_url: str, save_path: str = INPUT_DATA_PATH) -> str:
 
     Parameters
     ----------
-    zip_file_url : str
-        The URL of the ZIP file to download.
+    zip_file_url (str): The URL of the ZIP file
+        to download.
 
-    save_path : str, optional
-        The directory path where the downloaded ZIP file will be saved.
+    save_path (str, optional): The directory path
+        where the downloaded ZIP file will be saved.
         Defaults to INPUT_DATA_PATH.
 
     Returns
     -------
-    str
-        The path where the downloaded ZIP file is saved.
+    str: The path where the downloaded ZIP file is saved.
     """
     os.makedirs(save_path, exist_ok=True)
     zip_file_name = zip_file_url.split("/")[-1]
@@ -95,23 +98,22 @@ def download_zip(zip_file_url: str, save_path: str = INPUT_DATA_PATH) -> str:
 
 
 def create_interim_dir(
-        zip_save_path: str, unzip_save_path: str = INTERIM_DATA_PATH
+    zip_save_path: str, unzip_save_path: str = INTERIM_DATA_PATH
 ) -> str:
     """
-    Create an interim directory for storing the contents of a ZIP file after extraction.
+    Create an interim directory for storing
+    the contents of a ZIP file after extraction.
 
     Parameters
     ----------
-    zip_save_path : str
-        The path to the ZIP file.
-    unzip_save_path : str, optional
-        The parent directory path where the contents of the ZIP file will be extracted.
-        Defaults to INTERIM_DATA_PATH.
+    zip_save_path (str): The path to the ZIP file.
+    unzip_save_path (str, optional): The parent directory
+        path where the contents of the ZIP file
+        will be extracted. Defaults to INTERIM_DATA_PATH.
 
     Returns
     -------
-    str
-        The path of the created interim directory.
+    str: The path of the created interim directory.
     """
     data_year = os.path.basename(zip_save_path).split("_")[0] + "/"
     unzipped_save_path = os.path.join(unzip_save_path, data_year)
@@ -120,23 +122,22 @@ def create_interim_dir(
 
 
 def unzip_file(
-        zip_save_path: str, unzip_save_path: str = INTERIM_DATA_PATH
+    zip_save_path: str, unzip_save_path: str = INTERIM_DATA_PATH
 ) -> list[str]:
     """
     Unzip a ZIP file to a specified directory.
 
     Parameters
     ----------
-    zip_save_path : str
-        The path to the ZIP file to be extracted.
-    unzip_save_path : str, optional
-        The directory path where the contents of the ZIP file will be extracted.
-        Defaults to INTERIM_DATA_PATH.
+    zip_save_path (str): The path to the ZIP
+        file to be extracted.
+    unzip_save_path (str, optional) The directory
+        path where the contents of the ZIP file
+        will be extracted. Defaults to INTERIM_DATA_PATH.
 
     Returns
     -------
-    list[str]
-        List of files extracted from the ZIP archive.
+    list[str]: List of files extracted from the ZIP archive.
     """
     unzipped_save_path = create_interim_dir(zip_save_path, unzip_save_path)
     with zipfile.ZipFile(zip_save_path, "r") as zip_ref:
@@ -158,15 +159,14 @@ def obtain_data(start_year: int, end_year: int) -> list[str]:
 
     Parameters
     ----------
-    start_year : int
-        The start year of the range (inclusive) for validating ZIP files.
-    end_year : int
-        The end year of the range (inclusive) for validating ZIP files.
+    start_year (int): The start year of the range
+        (inclusive) for validating ZIP files.
+    end_year (int): The end year of the range
+        (inclusive) for validating ZIP files.
 
     Returns
     -------
-    list[str]
-        List of downloaded and extracted files.
+    list[str]: List of downloaded and extracted files.
     """
     unzipped_data = []
     links = get_html_contents(RAW_DATA_URL, "a", href=True)
