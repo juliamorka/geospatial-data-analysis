@@ -3,11 +3,9 @@
 Welcome to Precipitation Analysis Project! This project focuses on downloading and preprocessing the IMGW precipitation data and producing the suitable analysis in a form of plots and metrics.
 
 ### Project structure
-------------------------
 * data/ - template directory for storing the downloaded and preprocessed data
 * outputs/ - template directory for storing the plots, reports and data produced by the pipeline
 * src/ - source code
- -----------------------
 
 ### Conda environment
 To create the environment, when running the project for the first time, run below command from the main project directory:
